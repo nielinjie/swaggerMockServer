@@ -90,6 +90,7 @@ public class ExampleBuilder {
                     }
                 }
             }
+            //NOTE 从这里替换。把Fake引入。
         } else if (property instanceof EmailProperty) {
             if (example != null) {
                 return new StringExample(example.toString());

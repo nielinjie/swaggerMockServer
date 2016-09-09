@@ -44,6 +44,10 @@ paths:
             type: array
             items:
               $ref: '#/definitions/Person'
+        error:
+          description: 'Error'
+          schema:
+            $ref: '#/definitions/Error'
 parameters:
   username:
     name: username
@@ -67,6 +71,14 @@ definitions:
         type: string
       single:
         type: boolean
-
+  Error:
+    properties:
+      code:
+        type: integer
+        format: int32
+      message:
+        type: string
+      fields:
+        type: string
     
     
