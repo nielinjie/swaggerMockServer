@@ -22,27 +22,15 @@
         <version>5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.swagger</groupId>
-    <artifactId>my-project</artifactId>
+    <groupId>xyz.nietongxue</groupId>
+    <artifactId>swaggerMockServer</artifactId>
     <packaging>jar</packaging>
-    <name>my-project</name>
+    <name>swaggerMockServer</name>
     <version>1.0.1</version>
     <prerequisites>
         <maven>2.2.0</maven>
     </prerequisites>
-    <developers>
-        <developer>
-            <id>fehguy</id>
-            <name>Tony Tam</name>
-            <email>fehguy@gmail.com</email>
-        </developer>
-    </developers>
-    <mailingLists>
-        <mailingList>
-            <name>swagger-swaggersocket</name>
-            <archive>https://groups.google.com/forum/#!forum/swagger-swaggersocket</archive>
-        </mailingList>
-    </mailingLists>
+
     <licenses>
         <license>
             <name>Apache License 2.0</name>
@@ -114,65 +102,10 @@
                     </archive>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>${jetty-version}</version>
-                <configuration>
-                    <monitoredDirName>.</monitoredDirName>
-                    <scanTargets>
-                        <scanTarget>inflector.yaml</scanTarget>
-                        <scanTarget>src/main/swagger/swagger.yaml</scanTarget>
-                    </scanTargets>
-                    <scanIntervalSeconds>1</scanIntervalSeconds>
-                    <webApp>
-                        <contextPath>/</contextPath>
-                    </webApp>
-                    <httpConnector>
-                        <port>8080</port>
-                        <idleTimeout>60000</idleTimeout>
-                    </httpConnector>
-                </configuration>
-            </plugin>
+
         </plugins>
     </build>
-    <profiles>
-        <!-- generates pojos for a spec -->
-        <profile>
-            <id>pojos</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>io.swagger</groupId>
-                        <artifactId>swagger-codegen-maven-plugin</artifactId>
-                        <version>${codegen-version}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>generate</goal>
-                                </goals>
-                                <configuration>
-                                    <environmentVariables>
-                                        <!-- models to generate, empty means *all* -->
-                                        <models></models>
-                                        <!-- required by models as a helper -->
-                                        <supportingFiles>StringUtil.java</supportingFiles>
-                                    </environmentVariables>
-                                    <inputSpec>src/main/swagger/swagger.yaml</inputSpec>
-                                    <language>java</language>
-                                    <configOptions>
-                                        <sourceFolder>src/gen/java</sourceFolder>
-                                    </configOptions>
-                                    <output>.</output>
-                                    <modelPackage>io.swagger.sample.models</modelPackage>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>io.swagger</groupId>
@@ -196,11 +129,7 @@
             <artifactId>jersey-client</artifactId>
             <version>${jersey2-version}</version>
         </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>${servlet-api-version}</version>
-        </dependency>
+
 
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -229,6 +158,8 @@
             <artifactId>jersey-container-jetty-http</artifactId>
             <version>2.23.2</version>
         </dependency>
+
+
 
         <dependency>
             <groupId>junit</groupId>
