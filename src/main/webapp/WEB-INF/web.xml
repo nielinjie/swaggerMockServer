@@ -31,12 +31,4 @@
         <servlet-name>swagger-inflector</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-    <filter>
-        <filter-name>CORSFilter</filter-name>
-        <filter-class>io.swagger.inflector.utils.CORSFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>CORSFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
 </web-app>
