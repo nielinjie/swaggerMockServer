@@ -68,9 +68,26 @@ public class MockServerYamlTest {
         HttpResponse response;
 
         request = new HttpGet("http://localhost:8080/v1/people?size=10");
+        request.addHeader("username","any");
+        request.addHeader("password","any");
+        response = client.execute(request);
+        assertEquals(HttpStatus.SC_OK, response.getStatusLine()
+            .getStatusCode());
+        EntityUtils.consumeQuietly(response.getEntity());
+    }
+
+    @Test
+    public void testBadRequest()
+            throws IOException {
+        HttpClient client = new DefaultHttpClient();
+        HttpGet request;
+        HttpResponse response;
+
+        request = new HttpGet("http://localhost:8080/v1/people?size=10");
+
         response = client.execute(request);
         assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine()
-            .getStatusCode());
+                .getStatusCode());
         EntityUtils.consumeQuietly(response.getEntity());
     }
 }
