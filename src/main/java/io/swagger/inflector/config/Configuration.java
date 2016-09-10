@@ -99,8 +99,11 @@ public class Configuration {
             URL url = Configuration.class.getClassLoader().getResource("inflector.yaml");
             if(url != null) {
                 try {
-                    Configuration config = Yaml.mapper().readValue(new File(url.getFile()), Configuration.class);
-                    return config;
+                    //TODO 打到jar包里以后，还可以getFile，并且读到么？
+                    //DONE 直接使用defaultConfiguration，不用文件了。
+                    return read(url.getFile());
+//                    Configuration config = Yaml.mapper().readValue(new File(url.getFile()), Configuration.class);
+//                    return config;
                 } catch (Exception e) {
                   LOGGER.warn("couldn't read inflector config from resource stream");
                   // continue

@@ -11,12 +11,13 @@ public class MockServer {
 
     private final Server server;
 
-    public MockServer() {
+    public MockServer(String swaggerUrl) {
         server = new Server(8080);
         ServletContextHandler handler =new ServletContextHandler();
         handler.setContextPath("/");
         ServletHolder holder =  handler.addServlet(org.glassfish.jersey.servlet.ServletContainer.class,"/*");
         holder.setInitParameter("javax.ws.rs.Application","io.swagger.inflector.SwaggerInflector");
+        handler.setInitParameter("swagger-url",swaggerUrl);
         holder.setInitOrder(1);
         server.setHandler(handler);
 

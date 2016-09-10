@@ -41,7 +41,7 @@ public class MockServerYamlTest {
     public static void init() {
 
         try {
-            server = new MockServer();
+            server = new MockServer("./src/main/swagger/swagger.yaml");
             server.start();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -61,7 +61,7 @@ public class MockServerYamlTest {
      * Verifies default response for stubbed operation is 501
      */
     @Test
-    public void testInvokeStubbedOperationWithNoResponseDefined()
+    public void testServer()
         throws IOException {
         HttpClient client = new DefaultHttpClient();
         HttpGet request;
@@ -69,13 +69,8 @@ public class MockServerYamlTest {
 
         request = new HttpGet("http://localhost:8080/v1/people?size=10");
         response = client.execute(request);
-        assertEquals(HttpStatus.SC_OK, response.getStatusLine()
+        assertEquals(HttpStatus.SC_BAD_REQUEST, response.getStatusLine()
             .getStatusCode());
         EntityUtils.consumeQuietly(response.getEntity());
     }
-
-
-
-
-
 }

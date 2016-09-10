@@ -5,7 +5,7 @@ package xyz.nietongxue.mockServer;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
-        MockServer server = new MockServer();
+        MockServer server = new MockServer(args[0]);
         server.start();
     }
 }

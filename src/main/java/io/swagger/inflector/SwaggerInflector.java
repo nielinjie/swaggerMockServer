@@ -28,11 +28,7 @@ import io.swagger.inflector.controllers.SwaggerResourceController;
 import io.swagger.inflector.converters.Converter;
 import io.swagger.inflector.converters.InputConverter;
 import io.swagger.inflector.models.InflectResult;
-import io.swagger.inflector.processors.JsonExampleProvider;
-import io.swagger.inflector.processors.JsonNodeExampleSerializer;
-import io.swagger.inflector.processors.JsonProvider;
-import io.swagger.inflector.processors.XMLExampleProvider;
-import io.swagger.inflector.processors.YamlExampleProvider;
+import io.swagger.inflector.processors.*;
 import io.swagger.inflector.utils.DefaultContentTypeProvider;
 import io.swagger.inflector.utils.DefaultSpecFilter;
 import io.swagger.inflector.utils.ResolverUtil;
@@ -53,18 +49,12 @@ import org.glassfish.jersey.server.model.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
-
 import javax.servlet.ServletContext;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
+import java.util.*;
 
 public class SwaggerInflector extends ResourceConfig {
     private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerInflector.class);
@@ -95,6 +85,12 @@ public class SwaggerInflector extends ResourceConfig {
             // use default location
             config = Configuration.read();
         }
+        if (servletContext != null) {
+            if (servletContext.getInitParameter("swagger-url") != null) {
+                config.setSwaggerUrl(servletContext.getInitParameter("swagger-url"));
+            }
+        }
+//       config.setSwaggerUrl(swaggerUrl);
         init(config);
     }
 
@@ -103,7 +99,7 @@ public class SwaggerInflector extends ResourceConfig {
         SwaggerDeserializationResult swaggerParseResult = new SwaggerParser().readWithInfo(config.getSwaggerUrl(), null, true);
         Swagger swagger = swaggerParseResult.getSwagger();
 
-        if(!config.getValidatePayloads().isEmpty()) {
+        if (!config.getValidatePayloads().isEmpty()) {
             LOGGER.info("resolving swagger");
             new ResolverUtil().resolveFully(swagger);
         }
@@ -165,20 +161,18 @@ public class SwaggerInflector extends ResourceConfig {
 
         // filters
         if (config.getFilterClass() != null) {
-            if(!config.getFilterClass().isEmpty()) {
+            if (!config.getFilterClass().isEmpty()) {
                 try {
                     FilterFactory.setFilter((SwaggerSpecFilter) SwaggerInflector.class.getClassLoader().loadClass(config.getFilterClass()).newInstance());
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     LOGGER.error("Unable to set filter class " + config.getFilterClass());
                 }
             }
-        }
-        else {
+        } else {
             FilterFactory.setFilter(new DefaultSpecFilter());
         }
 
-        if(swagger == null) {
+        if (swagger == null) {
             LOGGER.error("the swagger definition is not valid");
         }
 
@@ -265,26 +259,26 @@ public class SwaggerInflector extends ResourceConfig {
         }
 
         InflectResult result = new InflectResult();
-        for(String key: swaggerParseResult.getMessages()) {
+        for (String key : swaggerParseResult.getMessages()) {
             result.specParseMessage(key);
         }
-        for(String key: missingOperations.keySet()) {
+        for (String key : missingOperations.keySet()) {
             result.unimplementedControllers(key, missingOperations.get(key));
         }
-        for(String model: config.getUnimplementedModels()) {
+        for (String model : config.getUnimplementedModels()) {
             result.unimplementedModel(model);
         }
-        for(String model: unimplementedMappedModels) {
+        for (String model : unimplementedMappedModels) {
             result.unimplementedModel(model);
         }
 
         if (Configuration.Environment.DEVELOPMENT.equals(configuration.getEnvironment())) {
-            if(missingOperations.size() > 0) {
+            if (missingOperations.size() > 0) {
                 LOGGER.debug("There are unimplemented operations!");
             }
-            for(String key: missingOperations.keySet()) {
+            for (String key : missingOperations.keySet()) {
                 LOGGER.debug(key);
-                for(String val: missingOperations.get(key)) {
+                for (String val : missingOperations.get(key)) {
                     LOGGER.debug(" - " + val);
                 }
             }
@@ -296,29 +290,27 @@ public class SwaggerInflector extends ResourceConfig {
                     .build();
 
             registerResources(builder.build());
-        }
-        else if (Configuration.Environment.STAGING.equals(configuration.getEnvironment())) {
-            if(missingOperations.size() > 0) {
+        } else if (Configuration.Environment.STAGING.equals(configuration.getEnvironment())) {
+            if (missingOperations.size() > 0) {
                 LOGGER.warn("There are unimplemented operations!");
             }
-            for(String key: missingOperations.keySet()) {
+            for (String key : missingOperations.keySet()) {
                 LOGGER.warn(key);
-                for(String val: missingOperations.get(key)) {
+                for (String val : missingOperations.get(key)) {
                     LOGGER.warn(" - " + val);
                 }
             }
-        }
-        else if (Configuration.Environment.PRODUCTION.equals(configuration.getEnvironment())) {
-            if(missingOperations.size() > 0) {
+        } else if (Configuration.Environment.PRODUCTION.equals(configuration.getEnvironment())) {
+            if (missingOperations.size() > 0) {
                 LOGGER.error("There are unimplemented operations!");
             }
-            for(String key: missingOperations.keySet()) {
+            for (String key : missingOperations.keySet()) {
                 LOGGER.error(key);
-                for(String val: missingOperations.get(key)) {
+                for (String val : missingOperations.get(key)) {
                     LOGGER.error(" - " + val);
                 }
             }
-            if(missingOperations.size() > 0) {
+            if (missingOperations.size() > 0) {
                 LOGGER.error("Unable to start due to unimplemented methods");
                 throw new RuntimeException("Unable to start due to unimplemented methods");
             }
