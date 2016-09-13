@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.inflector.converters.InputConverter;
 import io.swagger.util.Yaml;
 import org.apache.commons.lang3.StringUtils;
+import org.reflections.vfs.CommonsVfs2UrlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,6 +140,10 @@ public class Configuration {
                 .defaultValidators()
                 .defaultConverters()
                 .defaultProcessors();
+        Set<Direction> validates = new HashSet<>();
+        validates.add(Direction.IN);
+        validates.add(Direction.OUT);
+        c.setValidatePayloads(validates);
         c.setEntityProcessors(Arrays.asList("json", "xml"));
         return c;
     }

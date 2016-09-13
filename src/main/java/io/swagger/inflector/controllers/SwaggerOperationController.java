@@ -400,6 +400,7 @@ public class SwaggerOperationController extends ReflectionUtils implements Infle
         switch (direction) {
             case INPUT:
                 if (config.getValidatePayloads().contains(Configuration.Direction.IN)
+                        //NOTE schema被转换为json，所有validate都是针对Schema么？有些是否应该针对一些key、value对？比如in queryString和in path的parameter。
                         && !SchemaValidator.validate(value, Json.pretty(schema), direction)) {
                     throw new ApiException(new ApiError()
                             .code(config.getInvalidRequestStatusCode())

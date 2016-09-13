@@ -24,6 +24,7 @@ public class SchemaValidator {
 
     public static boolean validate(Object o, String schema, Direction direction) {
         try {
+
             JsonNode schemaObject = Json.mapper().readTree(schema);
             JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
             JsonNode content = Json.mapper().convertValue(o, JsonNode.class);

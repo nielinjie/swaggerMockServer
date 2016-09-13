@@ -16,10 +16,12 @@ public class MockServer {
 
     private final Server server;
 
-    public MockServer(String swaggerUrl) {
+    public MockServer(String swaggerUrl){
+        this(swaggerUrl,8080);
+    }
+    public MockServer(String swaggerUrl,int port) {
         Configuration configuration = Configuration.defaultConfiguration().swaggerUrl(swaggerUrl);
-
-        URI baseUri = UriBuilder.fromUri("http://localhost/").port(8080).build();
+        URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
         ResourceConfig config = new SwaggerInflector(configuration);
         server = JettyHttpContainerFactory.createServer(baseUri, config);
 

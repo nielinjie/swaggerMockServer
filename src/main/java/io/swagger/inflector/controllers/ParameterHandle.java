@@ -67,7 +67,10 @@ class ParameterHandle {
         }
         for (Iterator<String> x = ctx.getHeaders().keySet().iterator(); x.hasNext(); ) {
             String key = x.next();
-            //NOTE 为何被注释掉了，下面两行。
+            //NOTE 为何被注释掉了，下面两行。Head里面不可能与QueryString、path重名？
+            //existingKeys仅为发现多余的key存在。
+            //必选由getQueryParameters,getPathParameters,getHeaders等是不是null判断。
+
 //              if(!commonHeaders.contains(key))
 //                existingKeys.add(key);
         }
@@ -104,66 +107,9 @@ class ParameterHandle {
 
             try {
 
-                if ("formData".equals(in)) {
-                    LOGGER.info("formData found");
-                    SerializableParameter sp = (SerializableParameter) parameter;
-                    String name = parameter.getName();
-                    if (mt.isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
-                        // look in the form map
-                        Map<String, String> headers = formMap.get(name);
-                        if (headers != null && headers.size() > 0) {
-                            if ("file".equals(sp.getType())) {
-                                o = inputStreams.get(name);
-                            } else {
-                                Object obj = headers.get(parameter.getName());
-                                if (obj != null) {
-                                    JavaType jt = parameterClasses[i];
-                                    Class<?> cls = jt.getRawClass();
-
-                                    List<String> os = Arrays.asList(obj.toString());
-                                    try {
-                                        o = validator.convertAndValidate(os, parameter, cls, definitions);
-                                    } catch (ConversionException e) {
-                                        missingParams.add(e.getError());
-                                    } catch (ValidationException e) {
-                                        missingParams.add(e.getValidationMessage());
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        if (formDataString != null) {
-                            for (String part : parts) {
-                                String[] kv = part.split("=");
-                                if (kv != null) {
-                                    if (kv.length > 0) {
-                                        existingKeys.remove(kv[0] + ": fp");
-                                    }
-                                    if (kv.length == 2) {
-                                        // TODO how to handle arrays here?
-                                        String key = kv[0];
-                                        try {
-                                            String value = URLDecoder.decode(kv[1], "utf-8");
-                                            if (parameter.getName().equals(key)) {
-                                                JavaType jt = parameterClasses[i];
-                                                Class<?> cls = jt.getRawClass();
-                                                try {
-                                                    o = validator.convertAndValidate(Arrays.asList(value), parameter, cls, definitions);
-                                                } catch (ConversionException e) {
-                                                    missingParams.add(e.getError());
-                                                } catch (ValidationException e) {
-                                                    missingParams.add(e.getValidationMessage());
-                                                }
-                                            }
-                                        } catch (UnsupportedEncodingException e) {
-                                            LOGGER.error("unable to decode value for " + key);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else {
+                if ("formData".equals(in))
+                    o = handleFormData(formMap, inputStreams, i, missingParams, formDataString, parts, existingKeys, validator, definitions, parameterClasses, mt, parameter, o);
+                else {
                     try {
                         String paramName = parameter.getName();
                         if ("query".equals(in)) {
@@ -209,7 +155,7 @@ class ParameterHandle {
             i += 1;
         }
         if (existingKeys.size() > 0) {
-            LOGGER.debug("unexpected keys: " + existingKeys);
+            LOGGER.info("unexpected keys: " + existingKeys);
         }
         if (missingParams.size() > 0) {
             StringBuilder builder = new StringBuilder();
@@ -236,6 +182,68 @@ class ParameterHandle {
                     .message(builder.toString());
             throw new ApiException(error);
         }
+    }
+
+    private Object handleFormData(Map<String, Map<String, String>> formMap, Map<String, File> inputStreams, int i, List<ValidationMessage> missingParams, String formDataString, String[] parts, Set<String> existingKeys, InputConverter validator, Map<String, Model> definitions, JavaType[] parameterClasses, MediaType mt, Parameter parameter, Object o) {
+        LOGGER.info("formData found");
+        SerializableParameter sp = (SerializableParameter) parameter;
+        String name = parameter.getName();
+        if (mt.isCompatible(MediaType.MULTIPART_FORM_DATA_TYPE)) {
+            // look in the form map
+            Map<String, String> headers = formMap.get(name);
+            if (headers != null && headers.size() > 0) {
+                if ("file".equals(sp.getType())) {
+                    o = inputStreams.get(name);
+                } else {
+                    Object obj = headers.get(parameter.getName());
+                    if (obj != null) {
+                        JavaType jt = parameterClasses[i];
+                        Class<?> cls = jt.getRawClass();
+
+                        List<String> os = Arrays.asList(obj.toString());
+                        try {
+                            o = validator.convertAndValidate(os, parameter, cls, definitions);
+                        } catch (ConversionException e) {
+                            missingParams.add(e.getError());
+                        } catch (ValidationException e) {
+                            missingParams.add(e.getValidationMessage());
+                        }
+                    }
+                }
+            }
+        } else {
+            if (formDataString != null) {
+                for (String part : parts) {
+                    String[] kv = part.split("=");
+                    if (kv != null) {
+                        if (kv.length > 0) {
+                            existingKeys.remove(kv[0] + ": fp");
+                        }
+                        if (kv.length == 2) {
+                            // TODO how to handle arrays here?
+                            String key = kv[0];
+                            try {
+                                String value = URLDecoder.decode(kv[1], "utf-8");
+                                if (parameter.getName().equals(key)) {
+                                    JavaType jt = parameterClasses[i];
+                                    Class<?> cls = jt.getRawClass();
+                                    try {
+                                        o = validator.convertAndValidate(Arrays.asList(value), parameter, cls, definitions);
+                                    } catch (ConversionException e) {
+                                        missingParams.add(e.getError());
+                                    } catch (ValidationException e) {
+                                        missingParams.add(e.getValidationMessage());
+                                    }
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                LOGGER.error("unable to decode value for " + key);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return o;
     }
 
     private void handleMultipartDataType(ContainerRequestContext ctx, Map<String, Map<String, String>> formMap, Map<String, File> inputStreams, MediaType mt, Map<String, String> headers, String name) {

@@ -8,7 +8,7 @@ public class Main {
 //        final StaticLoggerBinder binder = StaticLoggerBinder.getSingleton();
 //        System.out.println(binder.getLoggerFactory());
 //        System.out.println(binder.getLoggerFactoryClassStr());
-        MockServer mockServer=new MockServer(args[0]);
+        MockServer mockServer=new MockServer(args[0],8090);
         mockServer.start();
 
     }

@@ -92,7 +92,7 @@ class ResponseCreate {
                 //NOTE 从request找到一个可能的content type，set到responseContext里面。
                 controller.setContentType(requestContext, resp, controller.getOperation());
                 //builder的entity和responseContext的entity是何区别？
-                //NOTE 删掉一遍，后面还有一遍，明白，试一试。
+                //NOTE 删掉一遍，后面还有一遍，没明白，试一试。
 //                builder.entity(output);
                 if (resp.getContentType() != null) {
                     // this comes from the operation itself
