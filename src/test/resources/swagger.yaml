@@ -30,6 +30,7 @@ paths:
           in: query
           description: Size of array
           required: true
+          maximum: 100
           type: integer
           format: int32
         - $ref: '#/parameters/username'
@@ -53,6 +54,23 @@ paths:
           description: 'Error'
           schema:
             $ref: '#/definitions/Error'
+    post:
+      produces:
+        - application/json
+      parameters:
+        - name: people
+          in: body
+          description: Add a people
+          required: true
+          schema:
+            $ref: '#/definitions/Person'
+      responses:
+        200:
+          description: Successful
+          schema:
+            $ref: '#/definitions/Person'
+
+
 parameters:
   username:
     name: username
@@ -69,9 +87,14 @@ parameters:
 definitions:
   Person:
     type: object
+    required:
+      - firstname
+      - lastname
+      - single
     properties:
       firstname:
         type: string
+        maxLength: 6
       lastname:
         type: string
       single:

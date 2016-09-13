@@ -58,7 +58,6 @@ class ParameterHandle {
         JavaType[] parameterClasses = controller.getParameterClasses();
 
 
-
         for (Iterator<String> x = uri.getQueryParameters().keySet().iterator(); x.hasNext(); ) {
             existingKeys.add(x.next() + ": qp");
         }
@@ -126,6 +125,11 @@ class ParameterHandle {
                                 o = EntityProcessorFactory.readValue(ctx.getMediaType(), ctx.getEntityStream(), cls);
                                 if (o != null) {
                                     controller.validate(o, body.getSchema(), SchemaValidator.Direction.INPUT);
+                                } else {
+                                    //NOTE 如果是null怎么办？说明无法解析？
+                                    //Done
+                                    throw new ValidationException().message(new ValidationMessage()
+                                            .message("can not read body parameter, check content-type"));
                                 }
                             } else if (parameter.getRequired()) {
                                 ValidationException e = new ValidationException();

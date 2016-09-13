@@ -4,11 +4,14 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,9 +29,14 @@ import static org.junit.Assert.assertTrue;
  * Created by nielinjie on 9/13/16.
  */
 public class TestUtil {
+
+
+
     public static AssertResponseBuilder assertResponse() {
         return new AssertResponseBuilder();
     }
+
+
 
     public static void checkWithAssert(HttpUriRequest request, AssertResponseBuilder responseBuilder) {
         checkWithAssert(request, null, responseBuilder);

@@ -15,7 +15,6 @@ package xyz.nietongxue.mockServer; /**
  */
 
 
-import org.apache.http.HttpRequest;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +29,7 @@ import static xyz.nietongxue.TestUtil.checkWithAssert;
 /**
  * Validates functionality of MockServer (swagger)
  */
-public class MockServerYamlTest {
+public class GetRequestTest {
 
     private static final String HTTP_LOCALHOST_8080_V1_PEOPLE = "http://localhost:8080/v1/people";
     private static MockServer server;
@@ -70,6 +69,18 @@ public class MockServerYamlTest {
                 assertResponse().status(SC_OK));
     }
 
+
+    @Test
+    public void testMax()
+            throws IOException {
+
+        checkWithAssert(HTTP_LOCALHOST_8080_V1_PEOPLE + "?size=101&name=lala", request -> {
+                    request.addHeader("username", "any");
+                    request.addHeader("password", "any");
+                },
+                assertResponse().status(SC_BAD_REQUEST).bodyContains("size"));
+    }
+
     @Test
     public void testNoName()
             throws IOException {
@@ -79,6 +90,8 @@ public class MockServerYamlTest {
                 },
                 assertResponse().status(SC_BAD_REQUEST).bodyContains("missing", "name"));
     }
+
+
 
     @Test
     public void testNoHead()
