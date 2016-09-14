@@ -1,16 +1,12 @@
 package xyz.nietongxue.mockServer;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import xyz.nietongxue.TestUtil;
 
-
-import java.io.UnsupportedEncodingException;
-
-import static junit.framework.TestCase.fail;
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
 import static xyz.nietongxue.TestUtil.assertResponse;
@@ -48,15 +44,8 @@ public class PostPeopleRequestTest {
                 .put("lastname", "string");
     }
 
-    public HttpPost postWithJSON(JSONObject json){
-        HttpPost request = new HttpPost(HTTP_LOCALHOST_8081_V1_PEOPLE);
-        request.setHeader("Content-Type", "application/json");
-        try {
-            request.setEntity(new StringEntity(json.toString()));
-        } catch (UnsupportedEncodingException e) {
-            fail();
-        }
-        return request;
+    private HttpPost postWithJSON(JSONObject put) {
+        return TestUtil.postWithJSON(HTTP_LOCALHOST_8081_V1_PEOPLE,put);
     }
     @Test
     public void testOK() {

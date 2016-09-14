@@ -2,6 +2,7 @@ package xyz.nietongxue.mockServer;
 
 import io.swagger.inflector.SwaggerInflector;
 import io.swagger.inflector.config.Configuration;
+import io.swagger.models.Swagger;
 import org.eclipse.jetty.server.Server;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -15,21 +16,28 @@ import java.net.URI;
 public class MockServer {
 
     private final Server server;
+    private Swagger swagger;
 
-    public MockServer(String swaggerUrl){
-        this(swaggerUrl,8080);
+    public MockServer(String swaggerUrl) {
+        this(swaggerUrl, 8080);
     }
-    public MockServer(String swaggerUrl,int port) {
+
+    public MockServer(String swaggerUrl, int port) {
         Configuration configuration = Configuration.defaultConfiguration().swaggerUrl(swaggerUrl);
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
-        ResourceConfig config = new SwaggerInflector(configuration);
-        server = JettyHttpContainerFactory.createServer(baseUri, config);
+        SwaggerInflector inflector = new SwaggerInflector(configuration);
+        server = JettyHttpContainerFactory.createServer(baseUri, inflector);
+        swagger = inflector.getSwagger();
+    }
 
+    public Swagger getSwagger() {
+        return swagger;
     }
 
     public void start() throws Exception {
         server.start();
     }
+
     public void stop() throws Exception {
         server.stop();
     }

@@ -9,21 +9,16 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
-import static java.awt.SystemColor.text;
-import static java.util.Arrays.stream;
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by nielinjie on 9/13/16.
@@ -37,6 +32,17 @@ public class TestUtil {
     }
 
 
+
+    public static HttpPost postWithJSON(String url,JSONObject json) {
+        HttpPost request = new HttpPost(url);
+        request.setHeader("Content-Type", "application/json");
+        try {
+            request.setEntity(new StringEntity(json.toString()));
+        } catch (UnsupportedEncodingException e) {
+            fail();
+        }
+        return request;
+    }
 
     public static void checkWithAssert(HttpUriRequest request, AssertResponseBuilder responseBuilder) {
         checkWithAssert(request, null, responseBuilder);
@@ -70,18 +76,18 @@ public class TestUtil {
     public static class AssertResponseBuilder {
 
 
-        private List<Consumer<HttpResponse>> assertors = new ArrayList<>();
+        private List<Consumer<HttpResponse>> asserts = new ArrayList<>();
         private String body = null;
 
         public AssertResponseBuilder status(int status) {
-            assertors.add((HttpResponse response) -> assertEquals(status, response.getStatusLine()
+            asserts.add((HttpResponse response) -> assertEquals(status, response.getStatusLine()
                     .getStatusCode()));
             return this;
         }
 
 
         public void apply(HttpResponse response) {
-            assertors.forEach((Consumer<HttpResponse> c) ->
+            asserts.forEach((Consumer<HttpResponse> c) ->
                     c.accept(response));
         }
 
@@ -97,7 +103,7 @@ public class TestUtil {
         }
 
         public AssertResponseBuilder bodyContains(String... texts) {
-            assertors.add((HttpResponse response) -> {
+            asserts.add((HttpResponse response) -> {
                 String finalBody = this.getBody(response);
                 for(String text:texts){
                     assertTrue("must contain - "+text,finalBody.contains(text));
@@ -107,7 +113,7 @@ public class TestUtil {
         }
 
         public AssertResponseBuilder bodyNotContains(String... texts) {
-            assertors.add((HttpResponse response) -> {
+            asserts.add((HttpResponse response) -> {
                 String finalBody = this.getBody(response);
                 for(String text:texts){
                     assertFalse("must not contain - "+text,finalBody.contains(text));

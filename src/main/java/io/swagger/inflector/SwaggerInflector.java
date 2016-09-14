@@ -64,40 +64,21 @@ public class SwaggerInflector extends ResourceConfig {
     private ServletContext servletContext;
     private Map<String, List<String>> missingOperations = new HashMap<String, List<String>>();
     private Set<String> unimplementedMappedModels = new TreeSet<String>();
+    private Swagger swagger;
+
+    public Swagger getSwagger() {
+        return swagger;
+    }
 
     public SwaggerInflector(Configuration configuration) {
         init(configuration);
     }
 
-    public SwaggerInflector(@Context ServletContext ctx) {
-        this.servletContext = ctx;
-        Configuration config = null;
-        if (servletContext != null) {
-            if (servletContext.getInitParameter("inflector-config") != null) {
-                try {
-                    config = Configuration.read(servletContext.getInitParameter("inflector-config"));
-                } catch (Exception e) {
-                    LOGGER.error("unable to read configuration from init param");
-                }
-            }
-        }
-        if (config == null) {
-            // use default location
-            config = Configuration.read();
-        }
-        if (servletContext != null) {
-            if (servletContext.getInitParameter("swagger-url") != null) {
-                config.setSwaggerUrl(servletContext.getInitParameter("swagger-url"));
-            }
-        }
-//       config.setSwaggerUrl(swaggerUrl);
-        init(config);
-    }
 
     protected void init(Configuration configuration) {
         config = configuration;
         SwaggerDeserializationResult swaggerParseResult = new SwaggerParser().readWithInfo(config.getSwaggerUrl(), null, true);
-        Swagger swagger = swaggerParseResult.getSwagger();
+        swagger = swaggerParseResult.getSwagger();
 
         if (!config.getValidatePayloads().isEmpty()) {
             LOGGER.info("resolving swagger");
