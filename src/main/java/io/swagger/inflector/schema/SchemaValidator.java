@@ -1,8 +1,12 @@
 package io.swagger.inflector.schema;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.fge.jsonschema.cfg.ValidationConfiguration;
 import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.format.draftv3.DateAttribute;
+import com.github.fge.jsonschema.library.DraftV4Library;
+import com.github.fge.jsonschema.library.Library;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import io.swagger.util.Json;
@@ -25,8 +29,25 @@ public class SchemaValidator {
     public static boolean validate(Object o, String schema, Direction direction) {
         try {
 
+
             JsonNode schemaObject = Json.mapper().readTree(schema);
-            JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+
+            //FIXED date attribute bug
+            //https://github.com/daveclayton/json-schema-validator/issues/103
+            final Library library = DraftV4Library.get().thaw()
+                    .addFormatAttribute("date", DateAttribute.getInstance())
+                    .freeze();
+
+            final ValidationConfiguration cfg = ValidationConfiguration.newBuilder()
+                    .setDefaultLibrary("http://some.site/myschema#", library).freeze();
+
+            final JsonSchemaFactory factory = JsonSchemaFactory.newBuilder()
+                    .setValidationConfiguration(cfg).freeze();
+
+//            JsonSchemaFactory factory = JsonSchemaFactory.byDefault();
+
+            //END
+
             JsonNode content = Json.mapper().convertValue(o, JsonNode.class);
             com.github.fge.jsonschema.main.JsonSchema jsonSchema = factory.getJsonSchema(schemaObject);
 

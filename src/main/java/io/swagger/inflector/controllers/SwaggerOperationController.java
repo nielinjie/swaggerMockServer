@@ -98,7 +98,7 @@ public class SwaggerOperationController extends ReflectionUtils implements Infle
         this.operation = operation;
         this.definitions = definitions;
         this.validator = InputConverter.getInstance();
-        this.method = detectMethod(operation);
+        this.method =detectMethod(operation);
         if (method == null) {
             LOGGER.debug("no method `" + methodName + "` in `" + controllerName + "` to map to, using mock response");
         }
@@ -137,7 +137,7 @@ public class SwaggerOperationController extends ReflectionUtils implements Infle
 
         operationSignature = "public io.swagger.inflector.models.ResponseContext " + builder.toString();
 
-        LOGGER.info("looking for method: `" + operationSignature + "` in class `" + controllerName + "`");
+        LOGGER.debug("looking for method: `" + operationSignature + "` in class `" + controllerName + "`");
         this.parameterClasses = args;
 
         if (controllerName != null && methodName != null) {

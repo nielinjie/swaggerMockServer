@@ -1,0 +1,58 @@
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "1.0.0"
+  title: Sample API
+
+basePath: /v1
+
+# Replace this with the path to your actual implementation
+host: localhost:8080
+
+# Describe your paths here
+paths:
+  /people:
+    post:
+      produces:
+        - application/json
+      parameters:
+        - name: people
+          in: body
+          description: Add a people
+          required: true
+          schema:
+            $ref: '#/definitions/Person'
+      responses:
+        200:
+          description: Successful
+          schema:
+            $ref: '#/definitions/Person'
+
+
+
+definitions:
+  Person:
+    type: object
+    required:
+      - firstname
+      - lastname
+      - single
+      - birth
+    properties:
+      firstname:
+        type: string
+        maxLength: 6
+      lastname:
+        type: string
+      single:
+        type: boolean
+      birth:
+        type: string
+        format: date
+      birthTime:
+        type: string
+        format: date-time
+
+    
+    

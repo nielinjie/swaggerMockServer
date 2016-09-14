@@ -29,7 +29,7 @@ import static xyz.nietongxue.TestUtil.checkWithAssert;
 /**
  * Validates functionality of MockServer (swagger)
  */
-public class GetRequestTest {
+public class GetPeopleRequestTest {
 
     private static final String HTTP_LOCALHOST_8080_V1_PEOPLE = "http://localhost:8080/v1/people";
     private static MockServer server;
@@ -38,7 +38,7 @@ public class GetRequestTest {
     public static void init() {
 
         try {
-            server = new MockServer("./src/test/resources/swagger.yaml");
+            server = new MockServer("./src/test/resources/people.yaml");
             server.start();
         } catch (Exception e) {
             throw new RuntimeException(e);
