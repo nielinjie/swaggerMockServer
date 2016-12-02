@@ -29,7 +29,7 @@ public class DirectionDeserializer extends JsonDeserializer<Set<Configuration.Di
 
     @Override
     public Set<Configuration.Direction> deserialize(JsonParser jp,
-            DeserializationContext ctxt) throws IOException {
+                                                    DeserializationContext ctxt) throws IOException {
         final JsonToken token = jp.getCurrentToken();
         if (token == JsonToken.VALUE_FALSE) {
             return EnumSet.noneOf(Configuration.Direction.class);

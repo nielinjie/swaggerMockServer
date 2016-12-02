@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+//NOTE 用于validate json
 public class SchemaValidator {
     static Map<String, JsonSchema> SCHEMA_CACHE = new HashMap<String, JsonSchema>();
     private static final Logger LOGGER = LoggerFactory.getLogger(SchemaValidator.class);

@@ -9,13 +9,14 @@ import xyz.nietongxue.TestUtil;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
-import static xyz.nietongxue.TestUtil.assertResponse;
-import static xyz.nietongxue.TestUtil.checkWithAssert;
+import static xyz.nietongxue.TestUtil.*;
+
 
 
 /**
  * Created by nielinjie on 9/13/16.
  */
+
 public class PostPeopleRequestTest {
     private static final String HTTP_LOCALHOST_8081_V1_PEOPLE = "http://localhost:8081/v1/people";
     private static MockServer server;
@@ -23,7 +24,7 @@ public class PostPeopleRequestTest {
     @BeforeClass
     public static void init() {
         try {
-            server = new MockServer("./src/test/resources/people.yaml",8081);
+            server = new MockServer("./src/test/resources/people.yaml", 8081);
             server.start();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -45,37 +46,41 @@ public class PostPeopleRequestTest {
     }
 
     private HttpPost postWithJSON(JSONObject put) {
-        return TestUtil.postWithJSON(HTTP_LOCALHOST_8081_V1_PEOPLE,put);
+        return TestUtil.postWithJSON(HTTP_LOCALHOST_8081_V1_PEOPLE, put);
     }
+
     @Test
     public void testOK() {
-        checkWithAssert(postWithJSON(people()
-                .put("single",true)
+        assertRequestAndResponse(postWithJSON(people()
+                .put("single", true)
         ), assertResponse().status(SC_OK).bodyContains("firstname", "lastname", "single"));
     }
 
     @Test
     public void testNotMatch() {
-        checkWithAssert(postWithJSON(people()
+        assertRequestAndResponse(postWithJSON(people()
         ), assertResponse().status(SC_BAD_REQUEST).bodyContains("not match"));
     }
+
     @Test
     public void testNotMatch2() {
-        checkWithAssert(postWithJSON(people()
-                .put("single",12)
+        assertRequestAndResponse(postWithJSON(people()
+                .put("single", 12)
         ), assertResponse().status(SC_BAD_REQUEST).bodyContains("not match"));
     }
+
     @Test
     public void testNotMatch3() {
-        checkWithAssert(postWithJSON(people()
-                .put("single","ok")
+        assertRequestAndResponse(postWithJSON(people()
+                .put("single", "ok")
         ), assertResponse().status(SC_BAD_REQUEST).bodyContains("not match"));
     }
+
     @Test
     public void testNotMatch4() {
-        checkWithAssert(postWithJSON(people()
-                .put("single",true)
-                .put("firstname","stringTooLong")
+        assertRequestAndResponse(postWithJSON(people()
+                .put("single", true)
+                .put("firstname", "stringTooLong")
         ), assertResponse().status(SC_BAD_REQUEST).bodyContains("not match"));
     }
 }

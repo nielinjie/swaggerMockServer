@@ -9,8 +9,7 @@ import xyz.nietongxue.TestUtil;
 
 import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_OK;
-import static xyz.nietongxue.TestUtil.assertResponse;
-import static xyz.nietongxue.TestUtil.checkWithAssert;
+import static xyz.nietongxue.TestUtil.*;
 
 
 /**
@@ -51,7 +50,7 @@ public class RichPeoplePostRequestTest {
     @Test
     public void testOk() {
 
-        checkWithAssert(postWithJSON(people()
+        assertRequestAndResponse(postWithJSON(people()
                         .put("single", true)
                         .put("birth", "2016-09-07")
                 )
@@ -64,14 +63,14 @@ public class RichPeoplePostRequestTest {
 
     @Test
     public void testNoFind() {
-        checkWithAssert(postWithJSON(people()
+        assertRequestAndResponse(postWithJSON(people()
                 .put("single", true)
         ), assertResponse().status(SC_BAD_REQUEST).bodyContains("not match"));
     }
 
     @Test
     public void testNotMatch() {
-        checkWithAssert(postWithJSON(people()
+        assertRequestAndResponse(postWithJSON(people()
                 .put("single", true)
                 .put("birth", "2016")
         ), assertResponse().status(SC_BAD_REQUEST).bodyContains("not match"));
@@ -79,7 +78,7 @@ public class RichPeoplePostRequestTest {
 
     @Test
     public void testMatchDateTime() {
-        checkWithAssert(postWithJSON(people()
+        assertRequestAndResponse(postWithJSON(people()
                 .put("single", true)
                 .put("birth", "2016-09-07")
                 .put("birthTime", "2016-09-07T13:00:00Z")
@@ -88,7 +87,7 @@ public class RichPeoplePostRequestTest {
 
     @Test
     public void testNotMatchDateTime() {
-        checkWithAssert(postWithJSON(people()
+        assertRequestAndResponse(postWithJSON(people()
                 .put("single", true)
                 .put("birth", "2016-09-07")
                 .put("birthTime", "2016-09-07")

@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.HttpMethod;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import java.util.*;
@@ -102,6 +101,7 @@ public class SwaggerInflector extends ResourceConfig {
             Map<String, Model> definitions = swagger.getDefinitions();
             for (String pathString : paths.keySet()) {
                 Path path = paths.get(pathString);
+                //NOTE jersey与resource config，靠Resource的静态方法沟通？ResourceConfig类上面，没有任何需要子类
                 final Resource.Builder builder = Resource.builder();
                 this.basePath = configuration.getRootPath() + swagger.getBasePath();
 

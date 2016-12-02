@@ -20,14 +20,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.inflector.converters.InputConverter;
-import io.swagger.util.Yaml;
 import org.apache.commons.lang3.StringUtils;
-import org.reflections.vfs.CommonsVfs2UrlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.net.URL;
 import java.util.*;
 
 public class Configuration {
@@ -77,59 +73,7 @@ public class Configuration {
         IN, OUT;
     }
 
-    public static Configuration read() {
-        String configLocation = System.getProperty("config", "inflector.yaml");
-        System.out.println("loading inflector config from " + configLocation);
-        if (configLocation != null) {
-            try {
-                return read(configLocation);
-            } catch (Exception e) {
-                // continue
-                LOGGER.warn("couldn't read inflector config from system property");
-            }
-        }
-        try {
-            // try to load from resources
-            URL url = Configuration.class.getClassLoader().getResource("inflector.yaml");
-            if (url != null) {
-                try {
-                    //TODO 打到jar包里以后，还可以getFile，并且读到么？
-                    //DONE 直接使用defaultConfiguration，不用文件了。
-                    return read(url.getFile());
-//                    Configuration config = Yaml.mapper().readValue(new File(url.getFile()), Configuration.class);
-//                    return config;
-                } catch (Exception e) {
-                    LOGGER.warn("couldn't read inflector config from resource stream");
-                    // continue
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("Returning default configuration!");
-        }
-        // try to read from default location, inflector.yaml
-        configLocation = "inflector.yaml";
-        try {
-            return read(configLocation);
-        } catch (Exception e) {
-            // continue
-            LOGGER.warn("couldn't read inflector config from system property");
-        }
 
-        return defaultConfiguration();
-    }
-
-    public static Configuration read(String configLocation) throws Exception {
-        Configuration config = Yaml.mapper().readValue(new File(configLocation), Configuration.class);
-        if (config != null && config.getExceptionMappers().size() == 0) {
-            config.setExceptionMappers(Configuration.defaultConfiguration().getExceptionMappers());
-        }
-        String environment = System.getProperty("environment");
-        if (environment != null) {
-            System.out.println("Overriding environment to " + environment);
-            config.setEnvironment(Environment.valueOf(environment));
-        }
-        return config;
-    }
 
     public static Configuration defaultConfiguration() {
         Configuration c = new Configuration()

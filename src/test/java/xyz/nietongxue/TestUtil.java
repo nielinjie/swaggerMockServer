@@ -13,12 +13,9 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.*;
 
 /**
  * Created by nielinjie on 9/13/16.
@@ -44,11 +41,11 @@ public class TestUtil {
         return request;
     }
 
-    public static void checkWithAssert(HttpUriRequest request, AssertResponseBuilder responseBuilder) {
-        checkWithAssert(request, null, responseBuilder);
+    public static void assertRequestAndResponse(HttpUriRequest request, AssertResponseBuilder responseBuilder) {
+        assertRequestAndResponse(request, null, responseBuilder);
     }
 
-    public static void checkWithAssert(HttpUriRequest request, Consumer<HttpRequest> buildRequest, AssertResponseBuilder responseBuilder) {
+    public static void assertRequestAndResponse(HttpUriRequest request, Consumer<HttpRequest> buildRequest, AssertResponseBuilder responseBuilder) {
         if (null != buildRequest) {
             buildRequest.accept(request);
         }
@@ -63,65 +60,13 @@ public class TestUtil {
         }
     }
 
-    public static void checkWithAssert(String url, AssertResponseBuilder responseBuilder) {
-        checkWithAssert(url, null, responseBuilder);
+    public static void assertRequestAndResponse(String url, AssertResponseBuilder responseBuilder) {
+        assertRequestAndResponse(url, null, responseBuilder);
     }
 
 
-    public static void checkWithAssert(String url, Consumer<HttpRequest> buildRequest, AssertResponseBuilder responseBuilder) {
-        checkWithAssert(new HttpGet(url), buildRequest, responseBuilder);
-    }
-
-
-    public static class AssertResponseBuilder {
-
-
-        private List<Consumer<HttpResponse>> asserts = new ArrayList<>();
-        private String body = null;
-
-        public AssertResponseBuilder status(int status) {
-            asserts.add((HttpResponse response) -> assertEquals(status, response.getStatusLine()
-                    .getStatusCode()));
-            return this;
-        }
-
-
-        public void apply(HttpResponse response) {
-            asserts.forEach((Consumer<HttpResponse> c) ->
-                    c.accept(response));
-        }
-
-        public String getBody(HttpResponse response) {
-            if (this.body == null) {
-                try {
-                    this.body = EntityUtils.toString(response.getEntity());
-                } catch (IOException e) {
-                    fail();
-                }
-            }
-            return this.body;
-        }
-
-        public AssertResponseBuilder bodyContains(String... texts) {
-            asserts.add((HttpResponse response) -> {
-                String finalBody = this.getBody(response);
-                for(String text:texts){
-                    assertTrue("must contain - "+text,finalBody.contains(text));
-                }
-            });
-            return this;
-        }
-
-        public AssertResponseBuilder bodyNotContains(String... texts) {
-            asserts.add((HttpResponse response) -> {
-                String finalBody = this.getBody(response);
-                for(String text:texts){
-                    assertFalse("must not contain - "+text,finalBody.contains(text));
-                }
-            });
-            return this;
-        }
-
+    public static void assertRequestAndResponse(String url, Consumer<HttpRequest> buildRequest, AssertResponseBuilder responseBuilder) {
+        assertRequestAndResponse(new HttpGet(url), buildRequest, responseBuilder);
     }
 
 
